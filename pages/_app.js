@@ -15,14 +15,17 @@ const GlobalStyle = createGlobalStyle`
   h1 {
     font-size: 3rem;
     line-height: 1.4;
+    margin: 0;
     margin-bottom: 2rem;
   }
   h2 {
     font-size: 2.8rem;
     line-height: 1.4;
+    margin: 0;
     margin-bottom: 2rem;
   }
   input, textarea, button, p, li {
+    margin: 0;
     font-size: 1.6rem;
   }
 
