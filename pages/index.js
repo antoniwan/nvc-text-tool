@@ -1,88 +1,97 @@
-import React from 'react'
-import Head from 'next/head'
-import Nav from '../components/nav'
+import React, { useState, useEffect } from "react";
+import uuid from "uuid/v1";
+import Head from "next/head";
+import styled from "styled-components";
 
-const Home = () => (
-  <div>
-    <Head>
-      <title>Home</title>
-      <link rel='icon' href='/favicon.ico' />
-    </Head>
+const StyledHome = styled.div`
+  padding: 15px;
 
-    <Nav />
+  textarea {
+    background: pink;
+    height: 100px;
+    max-width: 100%;
+    border: 2px solid black;
+    border-radius: 5px;
+    padding: 2rem;
+  }
 
-    <div className='hero'>
-      <h1 className='title'>Welcome to Next.js!</h1>
-      <p className='description'>
-        To get started, edit <code>pages/index.js</code> and save to reload.
-      </p>
+  .lp {
+    display: flex;
+  }
+`;
 
-      <div className='row'>
-        <a href='https://nextjs.org/docs' className='card'>
-          <h3>Documentation &rarr;</h3>
-          <p>Learn more about Next.js in the documentation.</p>
-        </a>
-        <a href='https://nextjs.org/learn' className='card'>
-          <h3>Next.js Learn &rarr;</h3>
-          <p>Learn about Next.js by following an interactive tutorial!</p>
-        </a>
-        <a
-          href='https://github.com/zeit/next.js/tree/master/examples'
-          className='card'
-        >
-          <h3>Examples &rarr;</h3>
-          <p>Find other example boilerplates on the Next.js GitHub.</p>
-        </a>
+const defaultEditorText = `Type something here and press 'Analyze' when you are ready to go.`;
+
+const Home = () => {
+  const extractWordsFromText = text => {
+    if (text === "") return [];
+    return text.match(/("[^"]+"|[^"\s]+)/g);
+  };
+
+  const extractSentencesFromText = text => {
+    if (text === "") return [];
+    return text.replace(/([.?!])\s*(?=[A-Z])/g, "$1|").split("|");
+  };
+
+  const [editorText, setEditorText] = useState(defaultEditorText);
+  const [words, setWords] = useState(extractWordsFromText(defaultEditorText));
+  const [sentences, setSentences] = useState(
+    extractSentencesFromText(defaultEditorText)
+  );
+  const handleEditorFocus = () => {
+    if (editorText !== defaultEditorText) return;
+    setEditorText("");
+    setWords([]);
+    setSentences([]);
+  };
+
+  const handleEditorChange = e => {
+    if (editorText === defaultEditorText) return;
+    console.log("test");
+    setEditorText(e.target.value);
+  };
+
+  useEffect(() => {
+    setWords(extractWordsFromText(editorText));
+    setSentences(extractSentencesFromText(editorText));
+  }, [editorText]);
+  return (
+    <StyledHome>
+      <Head>
+        <title>Home</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+
+      <h1>Language Processing Tool</h1>
+
+      <textarea
+        className="editable-content"
+        onFocus={handleEditorFocus}
+        onChange={handleEditorChange}
+        value={editorText}
+      />
+
+      <h3>Caveats</h3>
+      <ul>
+        <li>Does not support emoji.</li>
+      </ul>
+
+      <h2>Language Processing</h2>
+
+      <div className="lp">
+        <div>
+          <h2>Words</h2>
+          <ol>{!!words && words.map(w => <li key={uuid()}>{w}</li>)}</ol>
+        </div>
+        <div>
+          <h2>Sentences</h2>
+          <ol>
+            {!!sentences && sentences.map(s => <li key={uuid()}>{s}</li>)}
+          </ol>
+        </div>
       </div>
-    </div>
+    </StyledHome>
+  );
+};
 
-    <style jsx>{`
-      .hero {
-        width: 100%;
-        color: #333;
-      }
-      .title {
-        margin: 0;
-        width: 100%;
-        padding-top: 80px;
-        line-height: 1.15;
-        font-size: 48px;
-      }
-      .title,
-      .description {
-        text-align: center;
-      }
-      .row {
-        max-width: 880px;
-        margin: 80px auto 40px;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-around;
-      }
-      .card {
-        padding: 18px 18px 24px;
-        width: 220px;
-        text-align: left;
-        text-decoration: none;
-        color: #434343;
-        border: 1px solid #9b9b9b;
-      }
-      .card:hover {
-        border-color: #067df7;
-      }
-      .card h3 {
-        margin: 0;
-        color: #067df7;
-        font-size: 18px;
-      }
-      .card p {
-        margin: 0;
-        padding: 12px 0 0;
-        font-size: 13px;
-        color: #333;
-      }
-    `}</style>
-  </div>
-)
-
-export default Home
+export default Home;
